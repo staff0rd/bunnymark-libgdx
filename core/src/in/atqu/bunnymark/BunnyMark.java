@@ -35,15 +35,18 @@ public class BunnyMark extends ApplicationAdapter {
     private String fpsLabel = "";
     private String sizeLabel = "";
 
-    public class Bunny {
+    private class Bunny {
     	float x, y, speedX, speedY;
-    	public Bunny() {
+        Color tint;
+    	public Bunny(Color tint) {
+            this.tint = tint;
     		y = maxY/2;
     		x = 10;
     		speedY = random.nextInt(500) + 250;
         	speedX = random.nextInt(500) + 250 - 500;
     	}
     }
+
     private Array<Bunny> bunnies = new Array<Bunny>();
 
     @Override
@@ -58,9 +61,9 @@ public class BunnyMark extends ApplicationAdapter {
         viewport.apply();
 
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        bunnies.add(new Bunny());
-        bunnies.add(new Bunny());
+        color = new Color(1, 1, 1, 1);
+        bunnies.add(new Bunny(color));
+        bunnies.add(new Bunny(color));
         bunnyLabel = "2";
     }
 
@@ -86,22 +89,33 @@ public class BunnyMark extends ApplicationAdapter {
         if (bunny.y > maxY) { bunny.y = maxY; bunny.speedY = -bunny.speedY; }
 
         sprite.setPosition(bunny.x,bunny.y);
+        sprite.setColor(bunny.tint);
         sprite.draw(batch);
     }
 
     private float fpsTime  = 0;
     private int   fpsCount = 0;
-
+    private boolean touched = false;
+    private Color color;
     @Override
 	public void render() {
     	
     	if (Gdx.input.isTouched()) {
+            if (!touched) {
+                touched = true;
+                color = new Color();
+                color.r = random.nextFloat();
+                color.g = random.nextFloat();
+                color.b = random.nextFloat();
+                color.a = 1;
+            }
     		for (int i = 0; i < 10; i++) {
-    			bunnies.add(new Bunny());
+    			bunnies.add(new Bunny(color));
     		}
     		bunnyLabel = String.valueOf(bunnies.size);
-    	}
-    	
+    	} else
+    	    touched = false;
+
         float dt = Gdx.graphics.getDeltaTime();
 
         fpsTime  += dt;
